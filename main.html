@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Caída Libre Avanzado</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="main.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <h1><i class="fas fa-gavel"></i> Simulador de Caída Libre Avanzado</h1>
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div id="progress" class="progress-fill"></div>
+            </div>
+            <div class="progress-info">
+                <span id="progressText">0%</span>
+                <span id="timeCounter">0.00s</span>
+            </div>
+        </div>
+        
+        <div class="main-container">
+            <div class="left-panel">
+                <div class="controls card">
+                    <h2><i class="fas fa-sliders-h"></i> Controles</h2>
+                    <div class="control-group">
+                        <label for="heightInput">
+                            <i class="fas fa-ruler-vertical"></i> Altura inicial (metros):
+                        </label>
+                        <input type="number" id="heightInput" value="10" min="1" step="0.1">
+                    </div>
+                    <div class="control-group">
+                        <label for="gravityInput">
+                            <i class="fas fa-globe-americas"></i> Gravedad (m/s²):
+                        </label>
+                        <input type="number" id="gravityInput" value="9.81" min="0.1" step="0.1">
+                    </div>
+                    <div class="presets">
+                        <button class="preset-btn" data-gravity="9.81" data-height="10">
+                            <i class="fas fa-earth-americas"></i> Tierra
+                        </button>
+                        <button class="preset-btn" data-gravity="1.62" data-height="10">
+                            <i class="fas fa-moon"></i> Luna
+                        </button>
+                        <button class="preset-btn" data-gravity="3.71" data-height="10">
+                            <i class="fas fa-globe"></i> Marte
+                        </button>
+                    </div>
+                    <button id="startButton" class="primary-btn">
+                        <i class="fas fa-play"></i> Iniciar Caída
+                    </button>
+                    <button id="resetButton" class="secondary-btn">
+                        <i class="fas fa-redo"></i> Reiniciar
+                    </button>
+                    
+                    <button class="toggle-advanced" id="toggleAdvanced">
+                        <span>Mostrar controles avanzados</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    
+                    <div class="advanced-controls" id="advancedControls">
+                        <div class="control-group">
+                            <label>
+                                <i class="fas fa-exchange-alt"></i> Modo de simulación:
+                            </label>
+                            <div class="simulation-mode-buttons">
+                                <button class="mode-btn active" data-mode="vertical">
+                                    <i class="fas fa-arrow-down"></i> Vertical
+                                </button>
+                                <button class="mode-btn" data-mode="slope">
+                                    <i class="fas fa-mountain"></i> Pendiente
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="slopeControls" class="slope-controls" style="display: none;">
+                            <div class="control-group">
+                                <label for="slopeAngle">
+                                    <i class="fas fa-angle-up"></i> Ángulo de la rampa (grados):
+                                </label>
+                                <input type="number" id="slopeAngle" value="30" min="1" max="89" step="1">
+                            </div>
+                            <div class="control-group">
+                                <label for="slopeLength">
+                                    <i class="fas fa-ruler"></i> Longitud de la rampa (metros):
+                                </label>
+                                <input type="number" id="slopeLength" value="10" min="1" step="0.1">
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label for="ballColor">
+                                <i class="fas fa-palette"></i> Color de la pelota:
+                            </label>
+                            <input type="color" id="ballColor" value="#4361ee">
+                        </div>
+                        <div class="control-group">
+                            <label for="ballSize">
+                                <i class="fas fa-expand"></i> Tamaño de la pelota:
+                                <span id="ballSizeValue">20</span>px
+                            </label>
+                            <input type="range" id="ballSize" min="10" max="40" value="20">
+                        </div>
+                        <div class="control-group">
+                            <label>
+                                <input type="checkbox" id="showGrid">
+                                <i class="fas fa-th"></i> Mostrar cuadrícula
+                            </label>
+                        </div>
+                        <div class="control-group">
+                            <label for="airResistance">
+                                <i class="fas fa-wind"></i> Resistencia del aire:
+                            </label>
+                            <select id="airResistance">
+                                <option value="0">Ninguna</option>
+                                <option value="0.1">Baja</option>
+                                <option value="0.2">Media</option>
+                                <option value="0.3">Alta</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="summaryContainer" class="summary-container card">
+                    <h2><i class="fas fa-chart-bar"></i> Datos de la Simulación</h2>
+                    <div class="data-grid">
+                        <div class="data-item">
+                            <span class="data-label">Gravedad:</span>
+                            <span id="gravityValue" class="data-value">-</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-label">Altura:</span>
+                            <span id="heightValue" class="data-value">-</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-label">Tiempo:</span>
+                            <span id="timeValue" class="data-value">-</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-label">Velocidad:</span>
+                            <span id="velocityValue" class="data-value">-</span>
+                        </div>
+                    </div>
+                    
+                    <div class="data-chart-container">
+                        <canvas id="dataChart"></canvas>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button id="downloadButton" class="secondary-btn">
+                            <i class="fas fa-download"></i> Descargar datos
+                        </button>
+                        <button id="compareButton" class="secondary-btn">
+                            <i class="fas fa-exchange-alt"></i> Comparar
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="right-panel">
+                <div class="simulation-container card">
+                    <h2><i class="fas fa-vial"></i> Área de Simulación</h2>
+                    <canvas id="fallCanvas" width="500" height="600"></canvas>
+                    <div class="simulation-info">
+                        <div class="info-item">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span id="currentVelocity">0.00 m/s</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-clock"></i>
+                            <span id="currentTime">0.00 s</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="instructions-modal" id="instructionsModal">
+        <div class="modal-content">
+            <h2><i class="fas fa-info-circle"></i> Cómo usar el simulador</h2>
+            <ol>
+                <li>Establece la altura inicial y la gravedad</li>
+                <li>Selecciona el modo de simulación (vertical o pendiente)</li>
+                <li>Haz clic en "Iniciar Caída" para comenzar la simulación</li>
+                <li>Observa el movimiento y los datos en tiempo real</li>
+                <li>Usa los controles avanzados para personalizar</li>
+                <li>Descarga los datos o compara simulaciones</li>
+            </ol>
+            <button id="closeInstructions" class="primary-btn">
+                <i class="fas fa-check"></i> Entendido
+            </button>
+        </div>
+    </div>
+    
+    <script src="main.js"></script>
+</body>
+</html>
